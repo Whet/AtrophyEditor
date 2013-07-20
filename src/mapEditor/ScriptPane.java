@@ -34,8 +34,8 @@ public class ScriptPane extends JPanel {
 	private static final Color PROPERTY_TEXT_COLOUR = new Color(208, 143, 72);
 	
 	protected static final String COMMAND_WORDS = "(MAPSIZE|MAPSPAWNS|BLOCK|PORTAL|TRIGGER|COMMAND|TALK|TEXTUREBLOCK|INIT)";
-	protected static final String PROPERTY_WORDS = "(x|y|territory|zone|saferoom|stages|parent|stage|aiInit|openingLine|option|topic|lines|req|onTime|expireTime|expireRepeats|isName|isFaction|hasItem|hasWeapon|isAlive|isDead|isInvestigated|isNotInvestigated|isDaemon|destination|maxTeamSize|minTeamSize|isPlayer|aiNode|subscribe|behaviours|priority|containsFaction)";
-	protected static final String TRIGGER_COMMAND_WORDS = "(spawnTeam|spawnCharacter|removeUnit|killUnit|teleport|converse|saferoom|removeSaferoom|loadMap|lockDoor|unlockDoor|addTag|removeTag|directorBias|changeAiNode|showMessage|setTriggerRunning|spawnItem|spawnTalkNode|callCommand)";
+	protected static final String PROPERTY_WORDS = "(triggerCond|triggerEffect|x|y|territory|zone|saferoom|stages|parent|stage|aiInit|openingLine|option|topic|lines|req|onTime|expireTime|expireRepeats|isName|isFaction|hasItem|hasWeapon|isAlive|isDead|isInvestigated|isNotInvestigated|isDaemon|destination|maxTeamSize|minTeamSize|isPlayer|aiNode|subscribe|behaviours|priority|containsFaction)";
+	protected static final String TRIGGER_COMMAND_WORDS = "(updateTalk|spawnTeam|spawnCharacter|removeUnit|killUnit|teleport|converse|saferoom|removeSaferoom|loadMap|lockDoor|unlockDoor|addTag|removeTag|directorBias|changeAiNode|showMessage|setTriggerRunning|spawnItem|spawnTalkNode|callCommand)";
 	
 	private JTextPane txt;
 	private SuggestionPanel suggestion;
@@ -277,13 +277,15 @@ public class ScriptPane extends JPanel {
         			suggestions.add(new SuggestionMatch(words[i].length() - subWord.length(), words[i]));
         	}
         	
-        	words = PROPERTY_WORDS.split("\\|");
+        	commands = PROPERTY_WORDS.replaceAll("\\(|\\)", "");
+        	words = commands.split("\\|");
         	for(int i = 0; i < words.length; i++) {
         		if(words[i].toLowerCase().startsWith(subWord.toLowerCase()) && words[i].length() - subWord.length() > 0)
         			suggestions.add(new SuggestionMatch(words[i].length() - subWord.length(), words[i]));
         	}
         	
-        	words = TRIGGER_COMMAND_WORDS.split("\\|");
+        	commands = TRIGGER_COMMAND_WORDS.replaceAll("\\(|\\)", "");
+        	words = commands.split("\\|");
         	for(int i = 0; i < words.length; i++) {
         		if(words[i].toLowerCase().startsWith(subWord.toLowerCase()) && words[i].length() - subWord.length() > 0)
         			suggestions.add(new SuggestionMatch(words[i].length() - subWord.length(), words[i]));

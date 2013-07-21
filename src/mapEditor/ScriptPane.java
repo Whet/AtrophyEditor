@@ -8,7 +8,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.Stack;
 
 import javax.swing.BorderFactory;
 import javax.swing.JList;
@@ -34,8 +37,41 @@ public class ScriptPane extends JPanel {
 	private static final Color PROPERTY_TEXT_COLOUR = new Color(208, 143, 72);
 	
 	protected static final String COMMAND_WORDS = "(MAPSIZE|MAPSPAWNS|BLOCK|PORTAL|TRIGGER|COMMAND|TALK|TEXTUREBLOCK|INIT)";
-	protected static final String PROPERTY_WORDS = "(triggerCond|triggerEffect|x|y|territory|zone|saferoom|stages|parent|stage|aiInit|openingLine|option|topic|lines|req|onTime|expireTime|expireRepeats|isName|isFaction|hasItem|hasWeapon|isAlive|isDead|isInvestigated|isNotInvestigated|isDaemon|destination|maxTeamSize|minTeamSize|isPlayer|aiNode|subscribe|behaviours|priority|containsFaction)";
+	protected static final String PROPERTY_WORDS = "(cover|stash|triggerCond|triggerEffect|x|y|territory|zone|saferoom|stages|parent|stage|aiInit|openingLine|option|topic|lines|req|onTime|expireTime|expireRepeats|isName|isFaction|hasItem|hasWeapon|isAlive|isDead|isInvestigated|isNotInvestigated|isDaemon|destination|maxTeamSize|minTeamSize|isPlayer|aiNode|subscribe|behaviours|priority|containsFaction)";
 	protected static final String TRIGGER_COMMAND_WORDS = "(updateTalk|spawnTeam|spawnCharacter|removeUnit|killUnit|teleport|converse|saferoom|removeSaferoom|loadMap|lockDoor|unlockDoor|addTag|removeTag|directorBias|changeAiNode|showMessage|setTriggerRunning|spawnItem|spawnTalkNode|callCommand)";
+	
+	protected static final Set<String> ENCAPSULATING_WORDS = new HashSet<>();
+	
+	{
+		ENCAPSULATING_WORDS.add("MAPSIZE");
+		ENCAPSULATING_WORDS.add("MAPSPAWNS");
+		ENCAPSULATING_WORDS.add("BLOCK");
+		ENCAPSULATING_WORDS.add("cover");
+		ENCAPSULATING_WORDS.add("stash");
+		ENCAPSULATING_WORDS.add("PORTAL");
+		ENCAPSULATING_WORDS.add("TRIGGER");
+		ENCAPSULATING_WORDS.add("triggerCond");
+		ENCAPSULATING_WORDS.add("triggerEffect");
+		ENCAPSULATING_WORDS.add("isAlive");
+		ENCAPSULATING_WORDS.add("spawnTeam");
+		ENCAPSULATING_WORDS.add("spawnCharacter");
+		ENCAPSULATING_WORDS.add("killUnit");
+		ENCAPSULATING_WORDS.add("teleport");
+		ENCAPSULATING_WORDS.add("destination");
+		ENCAPSULATING_WORDS.add("converse");
+		ENCAPSULATING_WORDS.add("saferoom");
+		ENCAPSULATING_WORDS.add("removeSaferoom");
+		ENCAPSULATING_WORDS.add("loadMap");
+		ENCAPSULATING_WORDS.add("lockDoor");
+		ENCAPSULATING_WORDS.add("unlockDoor");
+		ENCAPSULATING_WORDS.add("changeAiNode");
+		ENCAPSULATING_WORDS.add("spawnItem");
+		ENCAPSULATING_WORDS.add("spawnTalkNode");
+		ENCAPSULATING_WORDS.add("COMMAND");
+		ENCAPSULATING_WORDS.add("TALK");
+		ENCAPSULATING_WORDS.add("topic");
+		ENCAPSULATING_WORDS.add("INIT");
+	}
 	
 	private JTextPane txt;
 	private SuggestionPanel suggestion;
@@ -137,7 +173,7 @@ public class ScriptPane extends JPanel {
                 else if (e.getKeyCode() == KeyEvent.VK_UP && suggestion != null)
                     suggestion.moveUp();
                 else if (e.getKeyCode() == 50 || e.getKeyCode() == 91 || e.getKeyChar() == KeyEvent.VK_BACK_SPACE || Character.isLetterOrDigit(e.getKeyChar())) {
-                    
+
                 	if(e.isShiftDown() && e.getKeyCode() == 50)
 						try {
 							txt.getDocument().insertString(txt.getCaretPosition(), "\"", null);
@@ -201,8 +237,16 @@ public class ScriptPane extends JPanel {
         private JPopupMenu popupMenu;
         private String subWord;
         private final int insertionPosition;
-
+        private final String context;
+        
         public SuggestionPanel(JTextPane txt, int position, String subWord, Point location) {
+        	
+        	
+        	this.context = getDataContext();
+        	
+        	if(!context.isEmpty())
+        		System.out.println("CONTEXT: " + context);
+        	
         	this.insertionPosition = position;
             this.subWord = subWord;
             list = createSuggestionList(position, subWord);
@@ -251,6 +295,69 @@ public class ScriptPane extends JPanel {
         		this.matchValue = matchValue;
         		this.text = text;
         	}
+        }
+        
+        private String getDataContext() {
+        	
+        	try {
+        	
+	        	int caretPos = txt.getCaretPosition();
+	        	
+	        	while(caretPos >= 0) {
+	        		
+	        		if(txt.getText().substring(caretPos, caretPos + 1).equals("{")) {
+	        			
+	        			Stack<Character> charStack = new Stack<>();
+	        			boolean readingVar = false;
+	        			
+	        			while(caretPos >= 0) {
+	
+	        				if(readingVar && charStack.peek().equals(':') && charStack.get(charStack.size() - 1).equals(':')) {
+	        					readingVar = false;
+	        					charStack.clear();
+	        				}
+	        				else if(txt.getText().substring(caretPos, caretPos + 1).equals("\"")) {
+	        					readingVar = true;
+	        				}
+	        				else if(txt.getText().substring(caretPos, caretPos + 1).equals("}")) {
+	        					return "";
+	        				}
+	        				else {
+	        					
+	        					if(!txt.getText().substring(caretPos, caretPos + 1).equals("{") &&
+	        	        		   !txt.getText().substring(caretPos, caretPos + 1).equals(" "))
+	        						charStack.push(txt.getText().substring(caretPos, caretPos + 1).toCharArray()[0]);
+	        					else {
+	        						caretPos--;
+	        						continue;
+	        					}
+	        					
+	        					char[] chars = new char[charStack.size()];
+	        					for(int i = 0; i < charStack.size(); i++) {
+	        						chars[chars.length - 1 - i] = charStack.get(i);
+	        					}
+	        					
+	        					String charString = new String(chars);
+
+	        					if(ENCAPSULATING_WORDS.contains(charString)) {
+	        						return charString;
+	        					}
+	        				}
+	
+	        				caretPos--;
+	        			}
+	        			
+	        		}
+	        		caretPos--;
+	        	}
+        	
+        	}
+        	catch(Exception e) {
+        		
+        	}
+        	
+        	return "";
+        	
         }
         
         private String[] createData(String subWord) {

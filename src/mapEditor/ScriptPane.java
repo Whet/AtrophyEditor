@@ -7,8 +7,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
@@ -40,6 +44,7 @@ public class ScriptPane extends JPanel {
 	protected static final String PROPERTY_WORDS = "(cover|stash|triggerCond|triggerEffect|x|y|territory|zone|saferoom|stages|parent|stage|aiInit|openingLine|option|topic|lines|req|onTime|expireTime|expireRepeats|isName|isFaction|hasItem|hasWeapon|isAlive|isDead|isInvestigated|isNotInvestigated|isDaemon|destination|maxTeamSize|minTeamSize|isPlayer|aiNode|subscribe|behaviours|priority|containsFaction)";
 	protected static final String TRIGGER_COMMAND_WORDS = "(updateTalk|spawnTeam|spawnCharacter|removeUnit|killUnit|teleport|converse|saferoom|removeSaferoom|loadMap|lockDoor|unlockDoor|addTag|removeTag|directorBias|changeAiNode|showMessage|setTriggerRunning|spawnItem|spawnTalkNode|callCommand)";
 	
+	protected static final Map<String, List<String>> ENCAPSULATED_PROPERTIES = new HashMap<>();
 	protected static final Set<String> ENCAPSULATING_WORDS = new HashSet<>();
 	
 	{
@@ -71,6 +76,112 @@ public class ScriptPane extends JPanel {
 		ENCAPSULATING_WORDS.add("TALK");
 		ENCAPSULATING_WORDS.add("topic");
 		ENCAPSULATING_WORDS.add("INIT");
+		
+		List<String> emptyList = new ArrayList<>();
+		List<String> factionList = new ArrayList<>();
+		factionList.add("\"Bandits\"");
+		factionList.add("\"Daemon\"");
+		factionList.add("\"Loner\"");
+		factionList.add("\"Player\"");
+		factionList.add("\"White Vista\"");
+		List<String> blockList = new ArrayList<>();
+		blockList.add("x:");
+		blockList.add("y:");
+		blockList.add("territory: \"FACTION\" 10");
+		blockList.add("zone: \"FACTION\"");
+		blockList.add("cover {\n}");
+		blockList.add("stash {\n}");
+		List<String> polygonList = new ArrayList<>();
+		polygonList.add("x:");
+		polygonList.add("y:");
+		List<String> triggerList = new ArrayList<>();
+		triggerList.add("triggerCond {\n}");
+		triggerList.add("triggerEffect {\n}");
+		List<String> triggerEffectList = new ArrayList<>();
+		triggerEffectList.add("updateTalk: \"TALKNAME\" 0");
+		triggerEffectList.add("spawnTeam {\n}");
+		triggerEffectList.add("spawnCharacter {\n}");
+		triggerEffectList.add("killUnit {\n}");
+		triggerEffectList.add("teleport {\n}");
+		triggerEffectList.add("converse {\n}");
+		triggerEffectList.add("saferoom {\n}");
+		triggerEffectList.add("removeSaferoom {\n}");
+		triggerEffectList.add("loadMap {\n}");
+		triggerEffectList.add("lockDoor {\n}");
+		triggerEffectList.add("unlockDoor {\n}");
+		triggerEffectList.add("addTag:\"TAGV\"");
+		triggerEffectList.add("removeTag:\"TAGV\"");
+		triggerEffectList.add("changeAiNode {\n{\n}\n{\n}\n}");
+		triggerEffectList.add("showMessage:\"MESSAGE\"");
+		triggerEffectList.add("setTriggerRunning:\"TRIGGER\" false");
+		triggerEffectList.add("spawnItem \"ITEMNAME\" {\n}");
+		triggerEffectList.add("spawnTalkNode {\n}");
+		triggerEffectList.add("commandCall:\"COMMAND\"");
+		List<String> unitInfoList = new ArrayList<>();
+		unitInfoList.add("isName: \"NAME\"");
+		unitInfoList.add("minTeamSize: 0");
+		unitInfoList.add("maxTeamSize: 5");
+		unitInfoList.add("hasItem: \"ITEMNAME\"");
+		unitInfoList.add("hasItem: \"WEAPONNAME\"");
+		unitInfoList.add("isFaction: \"FACTION\"");
+		unitInfoList.add("isAlive");
+		unitInfoList.add("isPlayer");
+		unitInfoList.add("destination {\n}");
+		List<String> roomInfoList = new ArrayList<>();
+		roomInfoList.add("containsFaction: \"FACTION\"");
+		roomInfoList.add("isName: \"BLOCKNAME\"");
+		List<String> doorInfoList = new ArrayList<>();
+		doorInfoList.add("isName: \"PORTALNAME\"");
+		List<String> loadMapList = new ArrayList<>();
+		loadMapList.add("isName: \"MAPNAME\"");
+		loadMapList.add("isFaction: \"FACTION\"");
+		loadMapList.add("engChance: 5");
+		loadMapList.add("medChance: 5");
+		loadMapList.add("wepChance: 5");
+		loadMapList.add("sciChance: 5");
+		List<String> talkNodeList = new ArrayList<>();
+		talkNodeList.add("isName: \"TALKNODENAME\"");
+		talkNodeList.add("subscribe: \"TALKNAME\"");
+		List<String> talkList = new ArrayList<>();
+		talkList.add("parent: \"PARENTNAME\"");
+		talkList.add("stage: 0");
+		talkList.add("aiInit: true");
+		talkList.add("openingLine: \"OPENINGLINE\"");
+		talkList.add("topic::\"TOPICNAME\" {\n}");
+		List<String> topicList = new ArrayList<>();
+		topicList.add("lines:\"LINE\"");
+		topicList.add("req:\"REQ\"");
+		List<String> commandList = new ArrayList<>();
+		commandList.add("commandCall: \"COMMANDNAME\"");
+		
+		ENCAPSULATED_PROPERTIES.put("MAPSIZE", emptyList);
+		ENCAPSULATED_PROPERTIES.put("MAPSPAWNS", factionList);
+		ENCAPSULATED_PROPERTIES.put("BLOCK", blockList);
+		ENCAPSULATED_PROPERTIES.put("cover", polygonList);
+		ENCAPSULATED_PROPERTIES.put("stash", polygonList);
+		ENCAPSULATED_PROPERTIES.put("PORTAL", polygonList);
+		ENCAPSULATED_PROPERTIES.put("TRIGGER", triggerList);
+		ENCAPSULATED_PROPERTIES.put("triggerCond", emptyList);
+		ENCAPSULATED_PROPERTIES.put("triggerEffect", triggerEffectList);
+		ENCAPSULATED_PROPERTIES.put("isAlive", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("spawnTeam", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("spawnCharacter", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("killUnit", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("teleport", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("destination", polygonList);
+		ENCAPSULATED_PROPERTIES.put("converse", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("saferoom", roomInfoList);
+		ENCAPSULATED_PROPERTIES.put("removeSaferoom", roomInfoList);
+		ENCAPSULATED_PROPERTIES.put("loadMap", loadMapList);
+		ENCAPSULATED_PROPERTIES.put("lockDoor", doorInfoList);
+		ENCAPSULATED_PROPERTIES.put("unlockDoor", doorInfoList);
+		ENCAPSULATED_PROPERTIES.put("changeAiNode", emptyList);
+		ENCAPSULATED_PROPERTIES.put("spawnItem", unitInfoList);
+		ENCAPSULATED_PROPERTIES.put("spawnTalkNode", talkNodeList);
+		ENCAPSULATED_PROPERTIES.put("COMMAND", triggerEffectList);
+		ENCAPSULATED_PROPERTIES.put("TALK", talkList);
+		ENCAPSULATED_PROPERTIES.put("topic", topicList);
+		ENCAPSULATED_PROPERTIES.put("INIT", commandList);
 	}
 	
 	private JTextPane txt;
@@ -241,7 +352,6 @@ public class ScriptPane extends JPanel {
         
         public SuggestionPanel(JTextPane txt, int position, String subWord, Point location) {
         	
-        	
         	this.context = getDataContext();
         	
         	if(!context.isEmpty())
@@ -398,6 +508,14 @@ public class ScriptPane extends JPanel {
         			suggestions.add(new SuggestionMatch(words[i].length() - subWord.length(), words[i]));
         	}
         	
+        	
+        	if(ENCAPSULATED_PROPERTIES.containsKey(context)) {
+        		List<String> suggestionsList = ENCAPSULATED_PROPERTIES.get(context);
+        		
+        		for(String suggestion: suggestionsList) {
+        			suggestions.add(new SuggestionMatch(100, suggestion));
+        		}
+        	}
 
         	String[] returnValue;
         	

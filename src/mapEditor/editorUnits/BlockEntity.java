@@ -8,6 +8,8 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
+import mapEditor.PreviewPane;
+
 public class BlockEntity extends MapEntity {
 
 	private List<Integer[]> points;
@@ -29,6 +31,7 @@ public class BlockEntity extends MapEntity {
 			point[1] += y;
 			this.points.set(i, point);
 		}
+		this.makePolygon();
 	}
 	
 	public void addPoint(int x, int y) {
@@ -62,14 +65,11 @@ public class BlockEntity extends MapEntity {
 	}
 
 	@Override
-	public boolean interact(Point mousePoint, int mouseButton) {
+	public boolean mouseInteraction(Point mousePoint, int mouseButton) {
 		if(!this.selected)
 			return false;
 		
 		switch(mouseButton) {
-			case 1:
-				
-			break;
 			case 3:
 				if(!this.removePoint(mousePoint.x, mousePoint.y))
 					this.addPoint(mousePoint.x, mousePoint.y);
@@ -131,6 +131,32 @@ public class BlockEntity extends MapEntity {
 		sb.append("\n}");
 		
 		return sb.toString();
+	}
+
+	@Override
+	public boolean keyboardInteraction(int key) {
+//		System.out.println(key);
+		
+		switch(key) {
+			// W
+			case 87:
+				this.move(0, -PreviewPane.GRID_SIZE);
+			break;
+			// A
+			case 65:
+				this.move(-PreviewPane.GRID_SIZE, 0);
+			break;
+			// S
+			case 83:
+				this.move(0, PreviewPane.GRID_SIZE);
+			break;
+			// D
+			case 68:
+				this.move(PreviewPane.GRID_SIZE, 0);
+			break;
+		}
+		
+		return false;
 	}
 	
 }

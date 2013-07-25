@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -32,7 +34,8 @@ public class PreviewPane extends JPanel {
 	private static final Color CROSSHAIR_COLOUR = Color.yellow;
 	private static final int CROSSHAIR_LENGTH = 10;
 	
-	private int gridSize;
+	public static final int GRID_SIZE = 40;
+	
 	private int panX, panY;
 	private boolean mousePanning;
 	private Point oldPoint;
@@ -46,7 +49,6 @@ public class PreviewPane extends JPanel {
 	
 	public PreviewPane() {
 		
-		this.gridSize = 40;
 		this.panX = 0;
 		this.panY = 0;
 		this.size = new int[]{0,0,0,0};
@@ -56,10 +58,13 @@ public class PreviewPane extends JPanel {
 		this.selectedType = MapEntityType.BLOCK;
 		this.selectedEntity = null;
 		
+		PreviewPane.this.setFocusable(true);
+		
 	}
 	
 	public void init(MapData mapData) {
-		this.addPanControl();
+		this.addMouseControl();
+		this.addKeyboardControl();
 		this.addMenuBar(mapData);
 		this.addPaintedMenu();
 		
@@ -106,7 +111,7 @@ public class PreviewPane extends JPanel {
 					}
 					
 					g.drawLine(paintBrush, 0, paintBrush, this.getHeight());
-					paintBrush += gridSize;
+					paintBrush += GRID_SIZE;
 					brightLineCounter++;
 				}
 				
@@ -126,7 +131,7 @@ public class PreviewPane extends JPanel {
 					}
 					
 					g.drawLine(0, paintBrush, this.getWidth(), paintBrush);
-					paintBrush += gridSize;
+					paintBrush += GRID_SIZE;
 					brightLineCounter++;
 				}
 				
@@ -164,8 +169,8 @@ public class PreviewPane extends JPanel {
 
 	private Point gridPoint(Point point){
 		int[] moddedMouseLocation = new int[2];
-		moddedMouseLocation[0] = (int) ( Math.round( ((point.x) - (panX) ) / (float)(gridSize) ) * (gridSize) );
-		moddedMouseLocation[1] = (int) ( Math.floor( ((point.y) - (panY) ) / (float)(gridSize) ) * (gridSize) );
+		moddedMouseLocation[0] = (int) ( Math.round( ((point.x) - (panX) ) / (float)(GRID_SIZE) ) * (GRID_SIZE) );
+		moddedMouseLocation[1] = (int) ( Math.floor( ((point.y) - (panY) ) / (float)(GRID_SIZE) ) * (GRID_SIZE) );
 		
 		return new Point(moddedMouseLocation[0],moddedMouseLocation[1]);
 	}
@@ -199,7 +204,7 @@ public class PreviewPane extends JPanel {
 		
 	}
 
-	private void addPanControl() {
+	private void addMouseControl() {
 		this.addMouseListener(new MouseAdapter() {
 			
 			@Override
@@ -220,7 +225,7 @@ public class PreviewPane extends JPanel {
 				
 				for(MapEntity entity: mapData.getEntities()) {
 					if(entity.getType().equals(selectedType)) {
-						if(entity == selectedEntity && entity.interact(mousePoint, mouseButton)) {
+						if(entity == selectedEntity && entity.mouseInteraction(mousePoint, mouseButton)) {
 							return true;
 						}
 						if(selectedEntity == null && mouseButton == 1 && entity.contains(mousePoint)) {
@@ -266,6 +271,17 @@ public class PreviewPane extends JPanel {
 		});
 		
 		updTimer.start();		
+	}
+	
+	private void addKeyboardControl() {
+		this.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(selectedEntity != null)
+					selectedEntity.keyboardInteraction(e.getKeyCode());
+			}
+		});
 	}
 
 	public void setMapSize(int[] size) {

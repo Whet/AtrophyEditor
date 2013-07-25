@@ -35,7 +35,9 @@ public abstract class MapEntity {
 
 	public abstract boolean contains(Point mousePoint);
 
-	public abstract boolean interact(Point mousePoint, int mouseButton);
+	public abstract boolean mouseInteraction(Point mousePoint, int mouseButton);
+	
+	public abstract boolean keyboardInteraction(int key);
 
 	public abstract void draw(Graphics2D g, int panX, int panY);
 	

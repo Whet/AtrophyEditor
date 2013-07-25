@@ -18,7 +18,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import mapEditor.FormFrame.FormSheet;
 import mapEditor.editorUnits.MapEntity;
 import mapEditor.editorUnits.MapEntityType;
 
@@ -44,9 +43,8 @@ public class PreviewPane extends JPanel {
 	private MapData mapData;
 	private MapEntityType selectedType;
 	private MapEntity selectedEntity;
-	private Window window;
 	
-	public PreviewPane(Window window) {
+	public PreviewPane() {
 		
 		this.panX = 0;
 		this.panY = 0;
@@ -58,7 +56,6 @@ public class PreviewPane extends JPanel {
 		this.selectedEntity = null;
 		
 		PreviewPane.this.setFocusable(true);
-		this.window = window;
 	}
 	
 	public void init(MapData mapData) {
@@ -155,8 +152,14 @@ public class PreviewPane extends JPanel {
 				Graphics2D g =  (Graphics2D) drawShape;
 				
 				for (MapEntity entity : mapData.getEntities()) {
-					if(entity.getX() + panX > 0 && entity.getX() + panX < this.getWidth() && entity.getY() + panY > 0 && entity.getY() + panY < this.getHeight())
+					if(entity.getX() + panX > 0 && entity.getX() + panX < this.getWidth() && entity.getY() + panY > 0 && entity.getY() + panY < this.getHeight()) {
 						entity.draw(g, panX, panY);
+						
+						if(!entity.getVarName().isEmpty()) {
+							g.setColor(Color.white);
+							g.drawString(entity.getVarName(), entity.getX() + panX, entity.getY() + panY - 5);
+						}
+					}
 				}
 			}
 			

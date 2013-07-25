@@ -64,5 +64,9 @@ public class MapData {
 			break;
 		}
 	}
+
+	public void removeEntity(MapEntity selectedEntity) {
+		this.entities.remove(selectedEntity);
+	}
 	
 }

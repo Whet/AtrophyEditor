@@ -311,6 +311,10 @@ public class PreviewPane extends JPanel {
 				else if(e.getKeyCode() == 69 && selectedEntity != null) {
 					FormFrame.createCodeForm(newPoint, selectedEntity);
 				}
+				// DEL
+				else if(e.getKeyCode() == 127 && selectedEntity != null) {
+					mapData.removeEntity(selectedEntity);
+				}
 				else if(selectedEntity != null)
 					selectedEntity.keyboardInteraction(e.getKeyCode());
 			}

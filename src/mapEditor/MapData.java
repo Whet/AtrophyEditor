@@ -8,6 +8,7 @@ import mapEditor.editorUnits.BlockEntity;
 import mapEditor.editorUnits.MapEntity;
 import mapEditor.editorUnits.MapEntityType;
 import mapEditor.editorUnits.MapInfo;
+import mapEditor.editorUnits.PortalEntity;
 
 public class MapData {
 
@@ -55,6 +56,9 @@ public class MapData {
 		switch(selectedType) {
 			case BLOCK:
 				entities.add(new BlockEntity(mousePoint.x, mousePoint.y));
+			break;
+			case PORTAL:
+				entities.add(new PortalEntity(mousePoint.x, mousePoint.y));
 			break;
 			default:
 			break;

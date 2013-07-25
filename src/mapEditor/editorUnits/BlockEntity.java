@@ -82,17 +82,22 @@ public class BlockEntity extends MapEntity {
 	@Override
 	public void draw(Graphics2D g, int panX, int panY) {
 		
-		if(this.selected) {
-			g.setColor(Color.orange);
-			for(int i = 0; i < this.points.size(); i++) {
-				g.drawOval(this.points.get(i)[0] + panX - 3, this.points.get(i)[1] + panY - 3, 6, 6);
+		if(this.typeSelected) {
+			
+			if(this.selected) {
+				g.setColor(Color.orange);
+				for(int i = 0; i < this.points.size(); i++) {
+					g.drawOval(this.points.get(i)[0] + panX - 3, this.points.get(i)[1] + panY - 3, 6, 6);
+				}
+				g.setColor(Color.cyan);
 			}
-			g.setColor(Color.cyan);
+			else
+				g.setColor(Color.red);
+		
+			g.drawOval(this.getX() + panX - 3, this.getY() + panY - 3, 6, 6);
 		}
 		else
-			g.setColor(Color.red);
-		
-		g.drawOval(this.getX() + panX - 3, this.getY() + panY - 3, 6, 6);
+			g.setColor(Color.gray);
 		
 		AffineTransform panTransform = new AffineTransform();
 		AffineTransform oldTransform = g.getTransform();

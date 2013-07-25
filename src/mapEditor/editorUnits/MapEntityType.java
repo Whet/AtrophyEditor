@@ -1,5 +1,5 @@
 package mapEditor.editorUnits;
 
 public enum MapEntityType {
-	BLOCK
+	BLOCK, PORTAL
 }

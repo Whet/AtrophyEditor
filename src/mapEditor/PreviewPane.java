@@ -200,10 +200,29 @@ public class PreviewPane extends JPanel {
 		menuBar.add(objectsMenu);
 		
 		JMenuItem blockBtn = new JMenuItem("Block");
+		blockBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setSelectedType(MapEntityType.BLOCK);
+			}
+
+		});
 		objectsMenu.add(blockBtn);
 		
+		JMenuItem portalBtn = new JMenuItem("Portal");
+		portalBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setSelectedType(MapEntityType.PORTAL);
+			}
+			
+		});
+		objectsMenu.add(portalBtn);
+		
 	}
-
+	
 	private void addMouseControl() {
 		this.addMouseListener(new MouseAdapter() {
 			
@@ -217,8 +236,9 @@ public class PreviewPane extends JPanel {
 						panAtClick = new int[]{panX, panY};
 					}
 				}
-				else if(!entityAction(gridPoint(newPoint), e.getButton()) && e.getButton() == 3)
+				else if(!entityAction(gridPoint(newPoint), e.getButton()) && e.getButton() == 3) {
 					mapData.createEntity(selectedType, gridPoint(newPoint));
+				}
 			}
 			
 			private boolean entityAction(Point mousePoint, int mouseButton) {
@@ -296,6 +316,15 @@ public class PreviewPane extends JPanel {
 		
 		if(selectedEntity != null)
 			this.selectedEntity.setSelected(true);
+	}
+	
+	private void setSelectedType(MapEntityType type) {
+		this.selectedType = type;
+		this.setSelectedEntity(null);
+		
+		for(MapEntity entity: this.mapData.getEntities()) {
+			entity.setTypeSelected(selectedType);
+		}
 	}
 
 }

@@ -1,9 +1,12 @@
 package mapEditor;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import mapEditor.editorUnits.BlockEntity;
 import mapEditor.editorUnits.MapEntity;
+import mapEditor.editorUnits.MapEntityType;
 import mapEditor.editorUnits.MapInfo;
 
 public class MapData {
@@ -23,7 +26,16 @@ public class MapData {
 	}
 	
 	private String getScript() {
-		return this.mapInfo.getScript();
+		StringBuffer sb = new StringBuffer();
+		sb.append(this.mapInfo.getScript());
+		
+		sb.append("\n\n");
+		
+		for(MapEntity entity: entities) {
+			sb.append(entity.getScript() + "\n\n");
+		}
+		
+		return sb.toString();
 	}
 
 	public void generateScript() {
@@ -33,6 +45,20 @@ public class MapData {
 		scriptPane.setText(this.getScript());
 		
 		previewPane.setMapSize(this.mapInfo.getSize());
+	}
+
+	public List<MapEntity> getEntities() {
+		return entities;
+	}
+
+	public void createEntity(MapEntityType selectedType, Point mousePoint) {
+		switch(selectedType) {
+			case BLOCK:
+				entities.add(new BlockEntity(mousePoint.x, mousePoint.y));
+			break;
+			default:
+			break;
+		}
 	}
 	
 }

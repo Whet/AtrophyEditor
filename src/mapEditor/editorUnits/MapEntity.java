@@ -1,14 +1,19 @@
 package mapEditor.editorUnits;
 
+import java.awt.Graphics2D;
+import java.awt.Point;
+
 public abstract class MapEntity {
 
 	private MapEntityType type;
 	private int x,y;
+	protected boolean selected;
 	
 	public MapEntity(MapEntityType type, int x, int y) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
+		this.selected = false;
 	}
 	
 	public void move(int x, int y) {
@@ -27,5 +32,17 @@ public abstract class MapEntity {
 	public int getY() {
 		return y;
 	}
+
+	public abstract boolean contains(Point mousePoint);
+
+	public abstract boolean interact(Point mousePoint, int mouseButton);
+
+	public abstract void draw(Graphics2D g, int panX, int panY);
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	public abstract String getScript();
 	
 }

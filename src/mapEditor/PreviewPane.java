@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import mapEditor.FormFrame.FormSheet;
 import mapEditor.editorUnits.MapEntity;
 import mapEditor.editorUnits.MapEntityType;
 
@@ -25,12 +26,9 @@ public class PreviewPane extends JPanel {
 
 	private static final int BRIGHTEST_LINE_GAP = 10;
 	private static final Color BRIGHTEST_LINE_COLOUR = new Color(0, 60, 60);
-
 	private static final int BRIGHT_LINE_GAP = 5;
 	private static final Color BRIGHT_LINE_COLOUR = new Color(0, 120, 120);
-	
 	private static final Color NORMAL_LINE_COLOUR = new Color(0, 30, 30);;
-	
 	private static final Color CROSSHAIR_COLOUR = Color.yellow;
 	private static final int CROSSHAIR_LENGTH = 10;
 	
@@ -46,8 +44,9 @@ public class PreviewPane extends JPanel {
 	private MapData mapData;
 	private MapEntityType selectedType;
 	private MapEntity selectedEntity;
+	private Window window;
 	
-	public PreviewPane() {
+	public PreviewPane(Window window) {
 		
 		this.panX = 0;
 		this.panY = 0;
@@ -59,7 +58,7 @@ public class PreviewPane extends JPanel {
 		this.selectedEntity = null;
 		
 		PreviewPane.this.setFocusable(true);
-		
+		this.window = window;
 	}
 	
 	public void init(MapData mapData) {
@@ -227,6 +226,12 @@ public class PreviewPane extends JPanel {
 		this.addMouseListener(new MouseAdapter() {
 			
 			@Override
+			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
+				PreviewPane.this.requestFocusInWindow();
+			}
+			
+			@Override
 			public void mousePressed(MouseEvent e) {
 
 				if(e.getButton() == 2) {
@@ -298,7 +303,15 @@ public class PreviewPane extends JPanel {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(selectedEntity != null)
+				// F5
+				if(e.getKeyCode() == 116) {
+					mapData.generateScript();
+				}
+				// E
+				else if(e.getKeyCode() == 69 && selectedEntity != null) {
+					FormFrame.createCodeForm(newPoint, selectedEntity);
+				}
+				else if(selectedEntity != null)
 					selectedEntity.keyboardInteraction(e.getKeyCode());
 			}
 		});

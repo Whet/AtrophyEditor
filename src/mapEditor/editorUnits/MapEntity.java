@@ -10,14 +10,28 @@ public abstract class MapEntity {
 	protected boolean selected;
 	protected boolean typeSelected;
 	
+	protected String varName;
+	protected String additionalCode;
+	
 	public MapEntity(MapEntityType type, int x, int y) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
 		this.selected = false;
 		this.typeSelected = true;
+		
+		varName = "";
+		additionalCode = "";
 	}
 	
+	public void setVarName(String varName) {
+		this.varName = varName;
+	}
+
+	public void setAdditionalCode(String additionalCode) {
+		this.additionalCode = additionalCode;
+	}
+
 	public void move(int x, int y) {
 		this.x += x;
 		this.y += y;
@@ -52,5 +66,13 @@ public abstract class MapEntity {
 	}
 
 	public abstract String getScript();
+
+	public String getVarName() {
+		return varName;
+	}
+
+	public String getAdditionalCode() {
+		return additionalCode;
+	}
 	
 }

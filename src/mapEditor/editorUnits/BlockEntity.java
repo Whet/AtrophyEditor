@@ -112,9 +112,16 @@ public class BlockEntity extends MapEntity {
 	@Override
 	public String getScript() {
 		
+		if(this.points.size() < 3)
+			return "";
+		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("BLOCK {\n");
+		if(this.varName.isEmpty())
+			sb.append("BLOCK {\n");
+		else
+			sb.append("BLOCK::\"" + this.varName + "\" {\n");
+		
 		sb.append("\tx: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
@@ -133,7 +140,7 @@ public class BlockEntity extends MapEntity {
 				sb.append(", ");
 		}
 		
-		sb.append("\n}");
+		sb.append("\n" + this.additionalCode + "\n}");
 		
 		return sb.toString();
 	}

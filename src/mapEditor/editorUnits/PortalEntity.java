@@ -121,9 +121,15 @@ public class PortalEntity extends MapEntity {
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("PORTAL {\n");
+		if(this.varName.isEmpty())
+			sb.append("PORTAL {\n");
+		else
+			sb.append("PORTAL::\"" + this.varName + "\"{\n");
+		
 		sb.append("\tx: " + this.getX() + ", " + this.point1.x + ", " + this.point2.x + "\n");
-		sb.append("\ty: " + this.getY() + ", " + this.point1.y + ", " + this.point2.y + "\n}");
+		sb.append("\ty: " + this.getY() + ", " + this.point1.y + ", " + this.point2.y + "\n");
+		
+		sb.append(this.additionalCode + "\n}");
 		
 		return sb.toString();
 	}

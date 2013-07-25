@@ -173,6 +173,7 @@ public class ScriptPane extends JPanel {
 	private SuggestionPanel suggestion;
 	
 	public ScriptPane() {
+		
 		this.setLayout(new BorderLayout());
 
         txt = new EditorTextPane();

@@ -9,6 +9,7 @@ import mapEditor.editorUnits.MapEntity;
 import mapEditor.editorUnits.MapEntityType;
 import mapEditor.editorUnits.MapInfo;
 import mapEditor.editorUnits.PortalEntity;
+import mapEditor.editorUnits.TriggerEntity;
 
 public class MapData {
 
@@ -59,6 +60,9 @@ public class MapData {
 			break;
 			case PORTAL:
 				entities.add(new PortalEntity(mousePoint.x, mousePoint.y));
+			break;
+			case TRIGGER:
+				entities.add(new TriggerEntity(mousePoint.x, mousePoint.y));
 			break;
 			default:
 			break;

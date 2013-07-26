@@ -95,6 +95,12 @@ public class PreviewPane extends JPanel {
 						   size[3] + size[2] + this.getHeight());
 				
 				drawEntities(g);
+				
+				g.setColor(Color.cyan);
+				if(scopedType == null)
+					g.drawString(selectedType.toString(), 30, 40);
+				else
+					g.drawString(scopedType.toString(), 30, 40);
 			}
 
 			private void drawGrid(Graphics g) {
@@ -234,6 +240,18 @@ public class PreviewPane extends JPanel {
 		});
 		objectsMenu.add(portalBtn);
 		noScopeButtons.add(portalBtn);
+		
+		JMenuItem triggerBtn = new JMenuItem("Trigger");
+		triggerBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setSelectedType(MapEntityType.TRIGGER);
+			}
+			
+		});
+		objectsMenu.add(triggerBtn);
+		noScopeButtons.add(triggerBtn);
 		
 		JMenuItem coverBtn = new JMenuItem("Cover");
 		coverBtn.addActionListener(new ActionListener() {
@@ -397,6 +415,7 @@ public class PreviewPane extends JPanel {
 						setSelectedType(parentEntity.getType());
 						setSelectedEntity(parentEntity);
 						parentEntity = null;
+						scopedType = null;
 						setScope(null);
 					}
 				}

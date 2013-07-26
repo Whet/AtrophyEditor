@@ -376,6 +376,7 @@ public class PreviewPane extends JPanel {
 								setSelectedEntity(null);
 								setSelectedType(MapEntityType.BLOCK_REGION);
 								setScope(MapEntityType.BLOCK_REGION);
+								scopedType = MapEntityType.COVER;
 								
 								for(MapEntity entity: parentEntity.getEntities()) {
 									entity.setTypeSelected(MapEntityType.BLOCK_REGION);

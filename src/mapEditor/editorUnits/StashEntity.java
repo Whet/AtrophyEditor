@@ -1,5 +1,9 @@
 package mapEditor.editorUnits;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+
 public class StashEntity extends BlockEntity {
 
 	public StashEntity(int x, int y) {
@@ -40,6 +44,36 @@ public class StashEntity extends BlockEntity {
 		sb.append("\n\t" + this.additionalCode + "\n\t}");
 		
 		return sb.toString();
+	}
+	
+	public void draw(Graphics2D g, int panX, int panY) {
+		
+		if(this.typeSelected) {
+			
+			if(this.selected) {
+				g.setColor(Color.orange);
+				for(int i = 0; i < this.points.size(); i++) {
+					g.drawOval(this.points.get(i)[0] + panX - 3, this.points.get(i)[1] + panY - 3, 6, 6);
+				}
+				g.setColor(Color.cyan);
+			}
+			else
+				g.setColor(Color.gray.darker());
+		
+			g.drawOval(this.getX() + panX - 3, this.getY() + panY - 3, 6, 6);
+		}
+		else
+			g.setColor(Color.gray.darker());
+		
+		AffineTransform panTransform = new AffineTransform();
+		AffineTransform oldTransform = g.getTransform();
+		
+		// likes to draw polygon 23 units off?!?!?
+		panTransform.translate(panX, panY + 23);
+		g.setTransform(panTransform);
+		g.drawPolygon(polygon);
+		g.setTransform(oldTransform);
+		
 	}
 
 }

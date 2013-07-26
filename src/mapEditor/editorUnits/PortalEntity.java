@@ -110,6 +110,10 @@ public class PortalEntity extends MapEntity {
 			g.setColor(Color.orange);
 			
 			g.fillOval(this.getX() + panX - 3, this.getY() + panY - 3, 6, 6);
+			
+			if(point1 != null && point2 != null)
+				g.drawLine(this.point1.x + panX, this.point1.y + panY,
+						   this.point2.x + panX, this.point2.y + panY);
 		}
 		
 	}

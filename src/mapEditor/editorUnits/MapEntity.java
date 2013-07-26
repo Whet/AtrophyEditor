@@ -5,7 +5,7 @@ import java.awt.Point;
 
 public abstract class MapEntity {
 
-	private MapEntityType type;
+	protected MapEntityType type;
 	private int x,y;
 	protected boolean selected;
 	protected boolean typeSelected;

@@ -12,7 +12,7 @@ import mapEditor.PreviewPane;
 
 public class BlockEntity extends MapEntity {
 
-	private List<Integer[]> points;
+	protected List<Integer[]> points;
 	private Polygon polygon;
 	
 	public BlockEntity(int x, int y) {

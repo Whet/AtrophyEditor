@@ -42,6 +42,7 @@ public class PreviewPane extends JPanel {
 	
 	private MapData mapData;
 	private MapEntityType selectedType;
+	private MapEntity scopedEntity;
 	private MapEntity selectedEntity;
 	
 	public PreviewPane() {
@@ -313,6 +314,19 @@ public class PreviewPane extends JPanel {
 				// E
 				else if(e.getKeyCode() == 69 && selectedEntity != null) {
 					FormFrame.createCodeForm(newPoint, selectedEntity);
+				}
+				// Q
+				else if(e.getKeyCode() == 81 && (selectedEntity != null || scopedEntity != null)) {
+					if(scopedEntity == null) {
+						scopedEntity = selectedEntity;
+						setSelectedEntity(null);
+						setSelectedType(MapEntityType.BLOCK_REGION);
+					}
+					else {
+						setSelectedType(scopedEntity.getType());
+						setSelectedEntity(scopedEntity);
+						scopedEntity = null;
+					}
 				}
 				// DEL
 				else if(e.getKeyCode() == 127 && selectedEntity != null) {

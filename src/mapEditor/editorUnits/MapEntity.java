@@ -2,6 +2,7 @@ package mapEditor.editorUnits;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.List;
 
 public abstract class MapEntity {
 
@@ -73,6 +74,16 @@ public abstract class MapEntity {
 
 	public String getAdditionalCode() {
 		return additionalCode;
+	}
+
+	public void createScopedEntity(MapEntityType scopedType, Point mousePoint) {
+	}
+	
+	public void removeScopedEntity(MapEntity entity) {
+	}
+
+	public List<MapEntity> getEntities() {
+		return null;
 	}
 	
 }

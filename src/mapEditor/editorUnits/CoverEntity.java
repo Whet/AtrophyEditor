@@ -16,11 +16,11 @@ public class CoverEntity extends BlockEntity {
 		StringBuffer sb = new StringBuffer();
 		
 		if(this.varName.isEmpty())
-			sb.append("cover {\n");
+			sb.append("\tcover {\n");
 		else
-			sb.append("cover::\"" + this.varName + "\" {\n");
+			sb.append("\tcover::\"" + this.varName + "\" {\n");
 		
-		sb.append("\tx: ");
+		sb.append("\t\tx: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
 			sb.append(this.points.get(i)[0]);
@@ -29,7 +29,7 @@ public class CoverEntity extends BlockEntity {
 				sb.append(", ");
 		}
 		
-		sb.append("\n\ty: ");
+		sb.append("\n\t\ty: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
 			sb.append(this.points.get(i)[1]);
@@ -38,7 +38,7 @@ public class CoverEntity extends BlockEntity {
 				sb.append(", ");
 		}
 		
-		sb.append("\n" + this.additionalCode + "\n}");
+		sb.append("\n\t" + this.additionalCode + "\n\t}");
 		
 		return sb.toString();
 	}

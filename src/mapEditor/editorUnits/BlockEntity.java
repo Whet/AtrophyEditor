@@ -14,12 +14,14 @@ public class BlockEntity extends MapEntity {
 
 	protected List<Integer[]> points;
 	private Polygon polygon;
+	private List<MapEntity> entities;
 	
 	public BlockEntity(int x, int y) {
 		super(MapEntityType.BLOCK, x, y);
 		
 		this.polygon = new Polygon();
 		this.points = new ArrayList<>();
+		this.entities = new ArrayList<>();
 	}
 	
 	@Override
@@ -30,6 +32,9 @@ public class BlockEntity extends MapEntity {
 			point[0] += x;
 			point[1] += y;
 			this.points.set(i, point);
+		}
+		for(MapEntity entity: this.entities) {
+			entity.move(x, y);
 		}
 		this.makePolygon();
 	}
@@ -107,6 +112,10 @@ public class BlockEntity extends MapEntity {
 		g.setTransform(panTransform);
 		g.drawPolygon(polygon);
 		g.setTransform(oldTransform);
+		
+		for(MapEntity entity: this.entities) {
+			entity.draw(g, panX, panY);
+		}
 	}
 
 	@Override
@@ -140,6 +149,12 @@ public class BlockEntity extends MapEntity {
 				sb.append(", ");
 		}
 		
+		sb.append("\n");
+		
+		for(MapEntity entity: this.entities) {
+			sb.append(entity.getScript() + "\n");
+		}
+		
 		sb.append("\n" + this.additionalCode + "\n}");
 		
 		return sb.toString();
@@ -169,6 +184,30 @@ public class BlockEntity extends MapEntity {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public void createScopedEntity(MapEntityType scopedType, Point mousePoint) {
+		switch(scopedType) {
+			case STASH:
+				entities.add(new StashEntity(mousePoint.x, mousePoint.y));
+			break;
+			case COVER:
+				entities.add(new CoverEntity(mousePoint.x, mousePoint.y));
+			break;
+			default:
+			break;
+		}
+	}
+	
+	@Override
+	public void removeScopedEntity(MapEntity entity) {
+		this.entities.remove(entity);
+	}
+	
+	@Override
+	public List<MapEntity> getEntities() {
+		return this.entities;
 	}
 	
 }

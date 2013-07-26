@@ -15,11 +15,11 @@ public class StashEntity extends BlockEntity {
 		StringBuffer sb = new StringBuffer();
 		
 		if(this.varName.isEmpty())
-			sb.append("stash {\n");
+			sb.append("\tstash {\n");
 		else
-			sb.append("stash::\"" + this.varName + "\" {\n");
+			sb.append("\tstash::\"" + this.varName + "\" {\n");
 		
-		sb.append("\tx: ");
+		sb.append("\t\tx: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
 			sb.append(this.points.get(i)[0]);
@@ -28,7 +28,7 @@ public class StashEntity extends BlockEntity {
 				sb.append(", ");
 		}
 		
-		sb.append("\n\ty: ");
+		sb.append("\n\t\ty: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
 			sb.append(this.points.get(i)[1]);
@@ -37,7 +37,7 @@ public class StashEntity extends BlockEntity {
 				sb.append(", ");
 		}
 		
-		sb.append("\n" + this.additionalCode + "\n}");
+		sb.append("\n\t" + this.additionalCode + "\n\t}");
 		
 		return sb.toString();
 	}

@@ -11,6 +11,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -42,8 +44,12 @@ public class PreviewPane extends JPanel {
 	
 	private MapData mapData;
 	private MapEntityType selectedType;
-	private MapEntity scopedEntity;
+	private MapEntityType scopedType;
+	private MapEntity parentEntity;
 	private MapEntity selectedEntity;
+	
+	private Set<JMenuItem> noScopeButtons;
+	private Set<JMenuItem> roomScopeButtons;
 	
 	public PreviewPane() {
 		
@@ -57,6 +63,9 @@ public class PreviewPane extends JPanel {
 		this.selectedEntity = null;
 		
 		PreviewPane.this.setFocusable(true);
+		
+		noScopeButtons = new HashSet<>();
+		roomScopeButtons = new HashSet<>();
 	}
 	
 	public void init(MapData mapData) {
@@ -212,6 +221,7 @@ public class PreviewPane extends JPanel {
 
 		});
 		objectsMenu.add(blockBtn);
+		noScopeButtons.add(blockBtn);
 		
 		JMenuItem portalBtn = new JMenuItem("Portal");
 		portalBtn.addActionListener(new ActionListener() {
@@ -223,6 +233,33 @@ public class PreviewPane extends JPanel {
 			
 		});
 		objectsMenu.add(portalBtn);
+		noScopeButtons.add(portalBtn);
+		
+		JMenuItem coverBtn = new JMenuItem("Cover");
+		coverBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scopedType = MapEntityType.COVER;
+			}
+			
+		});
+		objectsMenu.add(coverBtn);
+		roomScopeButtons.add(coverBtn);
+		
+		JMenuItem stashBtn = new JMenuItem("Stash");
+		stashBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scopedType = MapEntityType.STASH;
+			}
+			
+		});
+		objectsMenu.add(stashBtn);
+		roomScopeButtons.add(stashBtn);
+		
+		setScope(null);
 		
 	}
 	
@@ -246,24 +283,39 @@ public class PreviewPane extends JPanel {
 					}
 				}
 				else if(!entityAction(gridPoint(newPoint), e.getButton()) && e.getButton() == 3) {
-					mapData.createEntity(selectedType, gridPoint(newPoint));
+					if(parentEntity != null)
+						parentEntity.createScopedEntity(scopedType, gridPoint(newPoint));
+					else
+						mapData.createEntity(selectedType, gridPoint(newPoint));
 				}
 			}
 			
 			private boolean entityAction(Point mousePoint, int mouseButton) {
 				
-				for(MapEntity entity: mapData.getEntities()) {
-					if(entity.getType().equals(selectedType)) {
-						if(entity == selectedEntity && entity.mouseInteraction(mousePoint, mouseButton)) {
-							return true;
-						}
-						if(selectedEntity == null && mouseButton == 1 && entity.contains(mousePoint)) {
-							setSelectedEntity(entity);
-							return true;
+				if(parentEntity == null)
+					for(MapEntity entity: mapData.getEntities()) {
+						if(entity.getType().equals(selectedType)) {
+							if(entity == selectedEntity && entity.mouseInteraction(mousePoint, mouseButton)) {
+								return true;
+							}
+							if(selectedEntity == null && mouseButton == 1 && entity.contains(mousePoint)) {
+								setSelectedEntity(entity);
+								return true;
+							}
 						}
 					}
-				}
-				
+				else
+					for(MapEntity entity: parentEntity.getEntities()) {
+						if(entity.getType().equals(selectedType)) {
+							if(entity == selectedEntity && entity.mouseInteraction(mousePoint, mouseButton)) {
+								return true;
+							}
+							if(selectedEntity == null && mouseButton == 1 && entity.contains(mousePoint)) {
+								setSelectedEntity(entity);
+								return true;
+							}
+						}
+					}
 				setSelectedEntity(null);
 				return false;
 			}
@@ -316,21 +368,43 @@ public class PreviewPane extends JPanel {
 					FormFrame.createCodeForm(newPoint, selectedEntity);
 				}
 				// Q
-				else if(e.getKeyCode() == 81 && (selectedEntity != null || scopedEntity != null)) {
-					if(scopedEntity == null) {
-						scopedEntity = selectedEntity;
-						setSelectedEntity(null);
-						setSelectedType(MapEntityType.BLOCK_REGION);
+				else if(e.getKeyCode() == 81 && (selectedEntity != null || parentEntity != null)) {
+					if(parentEntity == null) {
+						switch(selectedEntity.getType()) {
+							case BLOCK:
+								parentEntity = selectedEntity;
+								setSelectedEntity(null);
+								setSelectedType(MapEntityType.BLOCK_REGION);
+								setScope(MapEntityType.BLOCK_REGION);
+								
+								for(MapEntity entity: parentEntity.getEntities()) {
+									entity.setTypeSelected(MapEntityType.BLOCK_REGION);
+								}
+							break;
+							default:
+							break;
+						
+						}
 					}
 					else {
-						setSelectedType(scopedEntity.getType());
-						setSelectedEntity(scopedEntity);
-						scopedEntity = null;
+						
+						for(MapEntity entity: parentEntity.getEntities()) {
+							entity.setSelected(false);
+							entity.setTypeSelected(parentEntity.getType());
+						}
+						
+						setSelectedType(parentEntity.getType());
+						setSelectedEntity(parentEntity);
+						parentEntity = null;
+						setScope(null);
 					}
 				}
 				// DEL
 				else if(e.getKeyCode() == 127 && selectedEntity != null) {
-					mapData.removeEntity(selectedEntity);
+					if(parentEntity != null)
+						parentEntity.removeScopedEntity(selectedEntity);
+					else
+						mapData.removeEntity(selectedEntity);
 				}
 				else if(selectedEntity != null)
 					selectedEntity.keyboardInteraction(e.getKeyCode());
@@ -358,6 +432,37 @@ public class PreviewPane extends JPanel {
 		
 		for(MapEntity entity: this.mapData.getEntities()) {
 			entity.setTypeSelected(selectedType);
+		}
+	}
+	
+	private void setScope(MapEntityType type) {
+		
+		for(JMenuItem item:roomScopeButtons) {
+			item.setEnabled(false);
+		}
+		for(JMenuItem item:noScopeButtons) {
+			item.setEnabled(false);
+		}
+		
+		if(type == null) {
+			for(JMenuItem item:noScopeButtons) {
+				item.setEnabled(true);
+			}
+			return;
+		}
+		
+		switch(type) {
+			case BLOCK_REGION:
+				for(JMenuItem item:roomScopeButtons) {
+					item.setEnabled(true);
+				}
+			break;
+			default:
+				for(JMenuItem item:noScopeButtons) {
+					item.setEnabled(true);
+				}
+			break;
+		
 		}
 	}
 

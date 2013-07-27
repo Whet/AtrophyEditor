@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -50,8 +51,9 @@ public class PreviewPane extends JPanel {
 	
 	private Set<JMenuItem> noScopeButtons;
 	private Set<JMenuItem> roomScopeButtons;
+	private Window window;
 	
-	public PreviewPane() {
+	public PreviewPane(Window window) {
 		
 		this.panX = 0;
 		this.panY = 0;
@@ -66,6 +68,8 @@ public class PreviewPane extends JPanel {
 		
 		noScopeButtons = new HashSet<>();
 		roomScopeButtons = new HashSet<>();
+		
+		this.window = window;
 	}
 	
 	public void init(MapData mapData) {
@@ -201,6 +205,38 @@ public class PreviewPane extends JPanel {
 		
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
+		
+		JMenuItem loadBtn = new JMenuItem("Load");
+		
+		loadBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser choose = new JFileChooser();
+				int showOpenDialog = choose.showOpenDialog(window);
+				
+				if(showOpenDialog == JFileChooser.APPROVE_OPTION)
+					PreviewPane.this.mapData.loadEntites(choose.getSelectedFile());
+			}
+		});
+		
+		fileMenu.add(loadBtn);
+		
+		JMenuItem saveBtn = new JMenuItem("Save");
+		
+		saveBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser choose = new JFileChooser();
+				int showSaveDialog = choose.showSaveDialog(window);
+				
+				if(showSaveDialog == JFileChooser.APPROVE_OPTION)
+					PreviewPane.this.mapData.saveEntites(choose.getSelectedFile());
+			}
+		});
+		
+		fileMenu.add(saveBtn);
 		
 		JMenuItem generateScript = new JMenuItem("Generate Script");
 		

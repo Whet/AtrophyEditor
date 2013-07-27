@@ -1,6 +1,13 @@
 package mapEditor;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +78,66 @@ public class MapData {
 
 	public void removeEntity(MapEntity selectedEntity) {
 		this.entities.remove(selectedEntity);
+	}
+
+	public void loadEntites(File selectedFile) {
+		
+		ObjectInputStream stream = null;
+		
+		try {
+			stream = new ObjectInputStream(new FileInputStream(selectedFile));
+			SaveStub save = (SaveStub) stream.readObject();
+			this.entities = save.entities;
+			this.mapInfo = save.mapInfo;
+			this.scriptPane.setText(save.script);
+		}
+		catch (IOException | ClassCastException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				stream.close();
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void saveEntites(File selectedFile) {
+		SaveStub save = new SaveStub(mapInfo, entities, scriptPane.getScript());
+		
+		ObjectOutputStream stream = null;
+		
+		try {
+			stream = new ObjectOutputStream(new FileOutputStream(selectedFile));   
+		
+			stream.writeObject(save);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				stream.close();
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}	
+	}
+	
+	private static class SaveStub implements Serializable {
+		public MapInfo mapInfo;
+		public List<MapEntity> entities;
+		public String script;
+		
+		public SaveStub(MapInfo mapInfo, List<MapEntity> entities, String script) {
+			this.mapInfo = mapInfo;
+			this.entities = entities;
+			this.script = script;
+		}
+		
 	}
 	
 }

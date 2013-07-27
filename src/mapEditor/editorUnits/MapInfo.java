@@ -1,6 +1,8 @@
 package mapEditor.editorUnits;
 
-public class MapInfo {
+import java.io.Serializable;
+
+public class MapInfo implements Serializable {
 	
 	private int[] size;
 	

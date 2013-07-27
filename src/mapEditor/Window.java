@@ -26,7 +26,7 @@ public class Window extends JFrame {
 		this.setSize(1200, 800);
 		
 		this.scriptPane = new ScriptPane();
-		this.previewPane = new PreviewPane();
+		this.previewPane = new PreviewPane(this);
 		
 		MapData mapData = new MapData(previewPane, scriptPane);
 		

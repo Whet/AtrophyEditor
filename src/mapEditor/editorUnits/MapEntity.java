@@ -2,9 +2,10 @@ package mapEditor.editorUnits;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.List;
 
-public abstract class MapEntity {
+public abstract class MapEntity implements Serializable {
 
 	protected MapEntityType type;
 	private int x,y;

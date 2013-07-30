@@ -11,7 +11,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
@@ -26,6 +28,8 @@ import mapEditor.editorUnits.MapEntityType;
 
 public class PreviewPane extends JPanel {
 
+	private static String HOME_LOCATION;
+	
 	private static final int BRIGHTEST_LINE_GAP = 10;
 	private static final Color BRIGHTEST_LINE_COLOUR = new Color(0, 60, 60);
 	private static final int BRIGHT_LINE_GAP = 5;
@@ -70,6 +74,10 @@ public class PreviewPane extends JPanel {
 		roomScopeButtons = new HashSet<>();
 		
 		this.window = window;
+		
+		HOME_LOCATION = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		if(HOME_LOCATION.endsWith("MapEditor.jar"))
+			HOME_LOCATION = HOME_LOCATION.substring(0, HOME_LOCATION.length() - "MapEditor.jar".length());
 	}
 	
 	public void init(MapData mapData) {
@@ -213,6 +221,7 @@ public class PreviewPane extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser choose = new JFileChooser();
+				choose.setCurrentDirectory(new File(HOME_LOCATION));
 				int showOpenDialog = choose.showOpenDialog(window);
 				
 				if(showOpenDialog == JFileChooser.APPROVE_OPTION)
@@ -229,6 +238,7 @@ public class PreviewPane extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser choose = new JFileChooser();
+				choose.setCurrentDirectory(new File(HOME_LOCATION));
 				int showSaveDialog = choose.showSaveDialog(window);
 				
 				if(showSaveDialog == JFileChooser.APPROVE_OPTION)

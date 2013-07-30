@@ -15,6 +15,7 @@ public class BlockEntity extends MapEntity {
 	protected List<Integer[]> points;
 	protected Polygon polygon;
 	private List<MapEntity> entities;
+	protected MapEntity parentEntity;
 	
 	public BlockEntity(int x, int y) {
 		super(MapEntityType.BLOCK, x, y);
@@ -190,10 +191,10 @@ public class BlockEntity extends MapEntity {
 	public void createScopedEntity(MapEntityType scopedType, Point mousePoint) {
 		switch(scopedType) {
 			case STASH:
-				entities.add(new StashEntity(mousePoint.x, mousePoint.y));
+				entities.add(new StashEntity(mousePoint.x, mousePoint.y, this));
 			break;
 			case COVER:
-				entities.add(new CoverEntity(mousePoint.x, mousePoint.y));
+				entities.add(new CoverEntity(mousePoint.x, mousePoint.y, this));
 			break;
 			default:
 			break;
@@ -208,6 +209,10 @@ public class BlockEntity extends MapEntity {
 	@Override
 	public List<MapEntity> getEntities() {
 		return this.entities;
+	}
+
+	public MapEntity getParentEntity() {
+		return parentEntity;
 	}
 	
 }

@@ -6,9 +6,10 @@ import java.awt.geom.AffineTransform;
 
 public class StashEntity extends BlockEntity {
 
-	public StashEntity(int x, int y) {
+	public StashEntity(int x, int y, MapEntity parentEntity) {
 		super(x, y);
 		this.type = MapEntityType.BLOCK_REGION;
+		this.parentEntity = parentEntity;
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class StashEntity extends BlockEntity {
 		sb.append("\t\tx: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
-			sb.append(this.points.get(i)[0]);
+			sb.append((int)(this.points.get(i)[0] - ((BlockEntity)this.parentEntity).polygon.getBounds2D().getMinX()));
 			
 			if(i + 1 < this.points.size())
 				sb.append(", ");
@@ -35,7 +36,7 @@ public class StashEntity extends BlockEntity {
 		sb.append("\n\t\ty: ");
 		
 		for(int i = 0; i < this.points.size(); i++) {
-			sb.append(this.points.get(i)[1]);
+			sb.append((int)(this.points.get(i)[1] - ((BlockEntity)this.parentEntity).polygon.getBounds2D().getMinY()));
 			
 			if(i + 1 < this.points.size())
 				sb.append(", ");
